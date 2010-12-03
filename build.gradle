@@ -29,38 +29,24 @@ task('setupLiquibaseProperties') << {
 
 
 task('generateChangeLog', dependsOn: 'setupLiquibaseProperties') << {
-  ant.java(classname: 'liquibase.integration.commandline.Main') {
-    classpath {
-      sourceSets.main.runtimeClasspath.each { jarPath ->
-        pathelement(location: jarPath)
-      }
-    }
-    arg(value: "--url=${databaseUrl}")
-    arg(value: "--username=${databaseUsername}")
-    arg(value: "--password=${databasePassword}")
-    if(changeLogFile) {
-      arg(value: "--changeLogFile=${changeLogFile}")
-    }
-    arg(value: 'generateChangeLog')
+  def argList = ["--url=${databaseUrl}", "--username=${databaseUsername}", "--password=${databasePassword}"]
+  if(changeLogFile) {
+    argList << "--changeLogFile=${changeLogFile}"
   }
+  argList << 'generateChangeLog'
+
+  runLiquibase(argList)
 }
 
 
 task('changeLogSync', dependsOn: 'setupLiquibaseProperties') << {
-  ant.java(classname: 'liquibase.integration.commandline.Main') {
-    classpath {
-      sourceSets.main.runtimeClasspath.each { jarPath ->
-        pathelement(location: jarPath)
-      }
-    }
-    arg(value: "--url=${databaseUrl}")
-    arg(value: "--username=${databaseUsername}")
-    arg(value: "--password=${databasePassword}")
-    if(changeLogFile) {
-      arg(value: "--changeLogFile=${changeLogFile}")
-    }
-    arg(value: 'changeLogSync')
+  def argList = ["--url=${databaseUrl}", "--username=${databaseUsername}", "--password=${databasePassword}"]
+  if(changeLogFile) {
+    argList << "--changeLogFile=${changeLogFile}"
   }
+  argList << 'changeLogSync'
+
+  runLiquibase(argList)
 }
 
 
@@ -76,62 +62,64 @@ task('updateSQL', dependsOn: 'setupLiquibaseProperties') << {
 
 task('tag', dependsOn: 'setupLiquibaseProperties') << {
   def tag = System.getProperty('tag')
-  ant.java(classname: 'liquibase.integration.commandline.Main') {
-    classpath {
-      sourceSets.main.runtimeClasspath.each { jarPath ->
-        pathelement(location: jarPath)
-      }
-    }
-    arg(value: "--url=${databaseUrl}")
-    arg(value: "--username=${databaseUsername}")
-    arg(value: "--password=${databasePassword}")
-    if(changeLogFile) {
-      arg(value: "--changeLogFile=${changeLogFile}")
-    }
-    arg(value: 'tag')
-    arg(value: tag)
+  def argList = ["--url=${databaseUrl}", "--username=${databaseUsername}", "--password=${databasePassword}"]
+  if(changeLogFile) {
+    argList << "--changeLogFile=${changeLogFile}"
   }
+  argList << 'tag'
+  argList << tag
+
+  runLiquibase(argList)
 }
 
 
 task('rollback', dependsOn: 'setupLiquibaseProperties') << {
   def tag = System.getProperty('tag')
-  ant.java(classname: 'liquibase.integration.commandline.Main') {
-    classpath {
-      sourceSets.main.runtimeClasspath.each { jarPath ->
-        pathelement(location: jarPath)
-      }
-    }
-    arg(value: "--url=${databaseUrl}")
-    arg(value: "--username=${databaseUsername}")
-    arg(value: "--password=${databasePassword}")
-    if(changeLogFile) {
-      arg(value: "--changeLogFile=${changeLogFile}")
-    }
-    arg(value: 'rollback')
-    arg(value: tag)
+  def argList = ["--url=${databaseUrl}", "--username=${databaseUsername}", "--password=${databasePassword}"]
+  if(changeLogFile) {
+    argList << "--changeLogFile=${changeLogFile}"
   }
+  argList << 'rollback'
+  argList << tag
+
+  runLiquibase(argList)
+}
+
+
+task('dbDoc', dependsOn: 'setupLiquibaseProperties') << {
+  def docDir = 'build/database/docs'
+  ant.mkdir(dir: docDir)
+  def argList = ["--url=${databaseUrl}", "--username=${databaseUsername}", "--password=${databasePassword}"]
+  if(changeLogFile) {
+    argList << "--changeLogFile=${changeLogFile}"
+  }
+  argList << 'dbdoc'
+  argList << docDir
+
+  runLiquibase(argList)
 }
 
 
 def liquibaseUpdate(databaseUrl, databaseUsername, databasePassword, changeLogFile, dryRun) {
-  ant.java(classname: 'liquibase.integration.commandline.Main') {
-    classpath {
-      sourceSets.main.runtimeClasspath.each { jarPath ->
-        pathelement(location: jarPath)
-      }
-    }
-    arg(value: "--url=${databaseUrl}")
-    arg(value: "--username=${databaseUsername}")
-    arg(value: "--password=${databasePassword}")
-    if(changeLogFile) {
-      arg(value: "--changeLogFile=${changeLogFile}")
-    }
-    if(dryRun) {
-      arg(value: 'updateSQL')
-    }
-    else {
-      arg(value: 'update')
-    }
+  def argList = ["--url=${databaseUrl}", "--username=${databaseUsername}", "--password=${databasePassword}"]
+  if(changeLogFile) {
+    argList << "--changeLogFile=${changeLogFile}"
+  }
+  if(dryRun) {
+    argList << 'updateSQL'
+  }
+  else {
+    argList << 'update'
+  }
+
+  runLiquibase(argList)
+}
+
+
+def runLiquibase(argList) {
+  javaexec {
+    main = 'liquibase.integration.commandline.Main'
+    classpath = sourceSets.main.runtimeClasspath
+    args = argList
   }
 }
