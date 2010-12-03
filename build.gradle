@@ -1,0 +1,20 @@
+apply plugin: 'groovy'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  groovy 'org.codehaus.groovy:groovy:1.7.5'
+  runtime 'org.liquibase:liquibase-core:2.0-rc6'
+}
+
+task('generateChangeLog') << {
+  ant.java(classname: 'liquibase.integration.commandline.Main') {
+    classpath {
+      sourceSets.main.runtimeClasspath.each { jarPath ->
+        pathelement(location: jarPath)
+      }
+    }
+  }
+}
