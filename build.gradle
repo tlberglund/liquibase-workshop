@@ -7,7 +7,13 @@ repositories {
 dependencies {
   groovy 'org.codehaus.groovy:groovy:1.7.5'
   runtime 'org.liquibase:liquibase-core:2.0-rc6'
+  runtime 'mysql:mysql-connector-java:5.1.9'
 }
+
+def databaseUrl = ''
+def databaseUsername = ''
+def databasePassword = ''
+def changeLogFile = System.getProperty('change.log.file')
 
 task('generateChangeLog') << {
   ant.java(classname: 'liquibase.integration.commandline.Main') {
@@ -16,5 +22,12 @@ task('generateChangeLog') << {
         pathelement(location: jarPath)
       }
     }
+    arg(value: "--url=${databaseUrl}")
+    arg(value: "--username=${databaseUsername}")
+    arg(value: "--password=${databasePassword}")
+    if(changeLogFile) {
+      arg(value: "--changeLogFile=${changeLogFile}")
+    }
+    arg(value: 'generateChangeLog')
   }
 }
