@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="tlberglund (generated)" id="1291404029970-1">
+        <createTable tableName="contact_ball_of_mud">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="number" type="BIGINT"/>
+            <column name="gender" type="VARCHAR(45)"/>
+            <column name="givenname" type="VARCHAR(45)"/>
+            <column name="middleinitial" type="VARCHAR(45)"/>
+            <column name="surname" type="VARCHAR(45)"/>
+            <column name="streetaddress" type="VARCHAR(45)"/>
+            <column name="city" type="VARCHAR(45)"/>
+            <column name="state" type="VARCHAR(45)"/>
+            <column name="zipcode" type="VARCHAR(45)"/>
+            <column name="country" type="VARCHAR(45)"/>
+            <column name="emailaddress" type="VARCHAR(45)"/>
+            <column name="password" type="VARCHAR(45)"/>
+            <column name="telephonenumber" type="VARCHAR(45)"/>
+            <column name="mothersmaiden" type="VARCHAR(45)"/>
+            <column name="birthday" type="DATETIME"/>
+            <column name="CCType" type="VARCHAR(45)"/>
+            <column name="CCNumber" type="VARCHAR(45)"/>
+            <column name="CVV2" type="VARCHAR(5)"/>
+            <column name="CCExpires" type="DATETIME"/>
+            <column name="NationalID" type="VARCHAR(45)"/>
+            <column name="UPS" type="VARCHAR(45)"/>
+            <column name="Occupation" type="VARCHAR(45)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="tlberglund (generated)" id="1291404029970-2">
+        <createTable tableName="inv">
+            <column name="invid" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="invnumber" type="VARCHAR(75)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="datetimecreated" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="udtime" type="TIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uddate" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="terms" type="VARCHAR(15)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="tlberglund (generated)" id="1291404029970-3">
+        <createTable tableName="lidetail">
+            <column name="invoice_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="row_number" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="comment" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="tlberglund (generated)" id="1291404029970-4">
+        <createTable tableName="lineitem">
+            <column name="invid" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rownum" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pn" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="qty" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="DECIMAL(10,2)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="tlberglund (generated)" id="1291404029970-5">
+        <addPrimaryKey columnNames="invid, rownum" tableName="lineitem"/>
+    </changeSet>
+    <changeSet author="tlberglund (generated)" id="1291404029970-6">
+        <createIndex indexName="PRIMARY" tableName="contact_ball_of_mud" unique="true">
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="tlberglund (generated)" id="1291404029970-7">
+        <createIndex indexName="number_UNIQUE" tableName="contact_ball_of_mud" unique="true">
+            <column name="number"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="tlberglund (generated)" id="1291404029970-8">
+        <createIndex indexName="PRIMARY" tableName="inv" unique="true">
+            <column name="invid"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="tlberglund (generated)" id="1291404029970-9">
+        <createIndex indexName="PRIMARY" tableName="lineitem" unique="true">
+            <column name="invid"/>
+            <column name="rownum"/>
+        </createIndex>
+    </changeSet>
+	<changeSet author="tlberglund" id="initial-table-rename">
+		<renameTable oldTableName="inv" newTableName="invoice" />
+		<renameTable oldTableName="lineitem" newTableName="line_item" />
+		<renameTable oldTableName="lidetail" newTableName="line_item_detail" />
+	</changeSet>
+</databaseChangeLog>
