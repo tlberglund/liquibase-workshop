@@ -10,12 +10,24 @@ dependencies {
   runtime 'mysql:mysql-connector-java:5.1.9'
 }
 
-def databaseUrl = ''
-def databaseUsername = ''
-def databasePassword = ''
-def changeLogFile = System.getProperty('change.log.file')
+def databaseUrl
+def databaseUsername
+def databasePassword
+def changeLogFile
 
-task('generateChangeLog') << {
+task('setupLiquibaseProperties') << {
+  def propertiesFile = new File('database.properties')
+  if(propertiesFile.exists()) {
+    def properties = new Properties()
+    properties.load(new FileInputStream(propertiesFile))
+    databaseUrl = properties.url
+    databaseUsername = properties.username
+    databasePassword = properties.password
+    changeLogFile = properties['change.log.file'] ?: System.getProperty('change.log.file')
+  }
+}
+
+task('generateChangeLog', dependsOn: 'setupLiquibaseProperties') << {
   ant.java(classname: 'liquibase.integration.commandline.Main') {
     classpath {
       sourceSets.main.runtimeClasspath.each { jarPath ->
@@ -29,5 +41,23 @@ task('generateChangeLog') << {
       arg(value: "--changeLogFile=${changeLogFile}")
     }
     arg(value: 'generateChangeLog')
+  }
+}
+
+
+task('changeLogSync') << {
+  ant.java(classname: 'liquibase.integration.commandline.Main') {
+    classpath {
+      sourceSets.main.runtimeClasspath.each { jarPath ->
+        pathelement(location: jarPath)
+      }
+    }
+    arg(value: "--url=${databaseUrl}")
+    arg(value: "--username=${databaseUsername}")
+    arg(value: "--password=${databasePassword}")
+    if(changeLogFile) {
+      arg(value: "--changeLogFile=${changeLogFile}")
+    }
+    arg(value: 'changeLogSync')
   }
 }
