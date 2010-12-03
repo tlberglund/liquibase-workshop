@@ -10,10 +10,10 @@ dependencies {
   runtime 'mysql:mysql-connector-java:5.1.9'
 }
 
-def databaseUrl
-def databaseUsername
-def databasePassword
-def changeLogFile
+def databaseUrl = null
+def databaseUsername = null
+def databasePassword = null
+def changeLogFile = null
 
 task('setupLiquibaseProperties') << {
   def propertiesFile = new File('database.properties')
@@ -26,6 +26,7 @@ task('setupLiquibaseProperties') << {
     changeLogFile = properties['change.log.file'] ?: System.getProperty('change.log.file')
   }
 }
+
 
 task('generateChangeLog', dependsOn: 'setupLiquibaseProperties') << {
   ant.java(classname: 'liquibase.integration.commandline.Main') {
@@ -45,7 +46,7 @@ task('generateChangeLog', dependsOn: 'setupLiquibaseProperties') << {
 }
 
 
-task('changeLogSync') << {
+task('changeLogSync', dependsOn: 'setupLiquibaseProperties') << {
   ant.java(classname: 'liquibase.integration.commandline.Main') {
     classpath {
       sourceSets.main.runtimeClasspath.each { jarPath ->
@@ -59,5 +60,78 @@ task('changeLogSync') << {
       arg(value: "--changeLogFile=${changeLogFile}")
     }
     arg(value: 'changeLogSync')
+  }
+}
+
+
+task('update', dependsOn: 'setupLiquibaseProperties') << {
+  liquibaseUpdate(databaseUrl, databaseUsername, databasePassword, changeLogFile, false)
+}
+
+
+task('updateSQL', dependsOn: 'setupLiquibaseProperties') << {
+  liquibaseUpdate(databaseUrl, databaseUsername, databasePassword, changeLogFile, true)
+}
+
+
+task('tag', dependsOn: 'setupLiquibaseProperties') << {
+  def tag = System.getProperty('tag')
+  ant.java(classname: 'liquibase.integration.commandline.Main') {
+    classpath {
+      sourceSets.main.runtimeClasspath.each { jarPath ->
+        pathelement(location: jarPath)
+      }
+    }
+    arg(value: "--url=${databaseUrl}")
+    arg(value: "--username=${databaseUsername}")
+    arg(value: "--password=${databasePassword}")
+    if(changeLogFile) {
+      arg(value: "--changeLogFile=${changeLogFile}")
+    }
+    arg(value: 'tag')
+    arg(value: tag)
+  }
+}
+
+
+task('rollback', dependsOn: 'setupLiquibaseProperties') << {
+  def tag = System.getProperty('tag')
+  ant.java(classname: 'liquibase.integration.commandline.Main') {
+    classpath {
+      sourceSets.main.runtimeClasspath.each { jarPath ->
+        pathelement(location: jarPath)
+      }
+    }
+    arg(value: "--url=${databaseUrl}")
+    arg(value: "--username=${databaseUsername}")
+    arg(value: "--password=${databasePassword}")
+    if(changeLogFile) {
+      arg(value: "--changeLogFile=${changeLogFile}")
+    }
+    arg(value: 'rollback')
+    arg(value: tag)
+  }
+}
+
+
+def liquibaseUpdate(databaseUrl, databaseUsername, databasePassword, changeLogFile, dryRun) {
+  ant.java(classname: 'liquibase.integration.commandline.Main') {
+    classpath {
+      sourceSets.main.runtimeClasspath.each { jarPath ->
+        pathelement(location: jarPath)
+      }
+    }
+    arg(value: "--url=${databaseUrl}")
+    arg(value: "--username=${databaseUsername}")
+    arg(value: "--password=${databasePassword}")
+    if(changeLogFile) {
+      arg(value: "--changeLogFile=${changeLogFile}")
+    }
+    if(dryRun) {
+      arg(value: 'updateSQL')
+    }
+    else {
+      arg(value: 'update')
+    }
   }
 }
