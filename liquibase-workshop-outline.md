@@ -4,7 +4,7 @@
 
 * MySQL 5.x (server and client)
 * JDK 1.5+
-* [Gradle 0.9](http://gradle.org/downloads.html)
+* [Gradle 0.9+](http://gradle.org/downloads.html)
 * OR
 	* VMware Player on Windows
 	* VMware Fusion on Mac
