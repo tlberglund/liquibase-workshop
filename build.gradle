@@ -15,6 +15,12 @@ def databaseUsername = null
 def databasePassword = null
 def changeLogFile = null
 
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '1.0'
+}
+
+
 task('setupLiquibaseProperties') << {
   def propertiesFile = new File('database.properties')
   if(propertiesFile.exists()) {
