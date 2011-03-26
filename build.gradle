@@ -29,8 +29,6 @@ database.changeLogFile = System.properties['change.log.file'] ?: properties['cha
 database.workingDir = System.properties['working.dir'] ?: properties['working.dir']
 
 
-
-
 task startDatabase << {
   javaexec {
     workingDir = projectDir
@@ -39,15 +37,12 @@ task startDatabase << {
   }
 }
 
-//java -cp h2*.jar org.h2.tools.RunScript -url "jdbc:h2:~/test" -user "sa" -script "create-schema-generic.sql"
-
 task buildSchema << {
-  ant.mkdir(dir: 'db')
   javaexec {
     classpath = sourceSets.main.runtimeClasspath
     workingDir = projectDir
     main = 'org.h2.tools.RunScript'
-    args = ['-url', 'database.url', '-user', 'database.username', '-script', 'create-schema-generic.sql']
+    args = ['-url', database.url, '-user', database.username, '-script', 'create-schema-generic.sql']
   }
 }
 
