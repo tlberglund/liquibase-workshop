@@ -34,6 +34,8 @@ Course materials for the Liquibase Workshop.
 	1. \. create\_schema.sql
 	
 1. Install Gradle
+    * Use the gradlew script to install via the "Gradle wrapper"
+        - or
 	* Unzip Gradle ZIP file to a directory of your choosing
 	* Add a GRADLE\_HOME environment variable, pointing to this directory
 	* Add $GRADLE\_HOME/bin to your PATH
@@ -42,9 +44,9 @@ Course materials for the Liquibase Workshop.
 1. Create a database.properties file in your project directory
 	> url: jdbc:mysql://localhost/liquibase\_workshop
 	
-	> username: [use your value here]
+	> username: liquibaseuser
 	
-	> password: [use your value here]
+	> password: password
 	
 	> change.log.file: changelog.xml
 
