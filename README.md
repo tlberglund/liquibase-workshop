@@ -12,39 +12,18 @@ Course materials for the Liquibase Workshop.
 1. Download workshop files
     * Use Git:
         * git clone https://github.com/tlberglund/liquibase-workshop
-	* Create a working directory in the location of your choosing
-	* Copy files from thumb drive
-	
-1. Verify installation of MySQL
-	* From command line, run "mysql" command
-	* Must be able to log in as admin (to create users and databases)
-	* You may optionally use the GUI management tool of your choice
-	
-1. Create Test databases
-	1. mysql -u root -p
-		* Enter root password when prompted
-	1. CREATE DATABASE liquibase\_workshop;
-	1. GRANT ALL PRIVILEGES ON liquibase_workshop.* TO liquibaseuser@localhost IDENTIFIED BY 'password';
-	1. exit
-	1. \. create\_schema.sql
+	* Download the ZIP:
+	    * https://github.com/downloads/tlberglund/liquibase-workshop/liquibase-workshop.zip
+	* Put workshop files in a directory of your choosing.
 	
 1. Install Gradle
-    * Use the gradlew script to install via the "Gradle wrapper"
+    * Use the gradlew script to install via the "Gradle wrapper" (this is already included in your workshop materials)
         - or
 	* Unzip Gradle ZIP file to a directory of your choosing
 	* Add a GRADLE\_HOME environment variable, pointing to this directory
 	* Add $GRADLE\_HOME/bin to your PATH
 	* Test by running "gradle --version" from the command line
 	
-1. Create a database.properties file in your project directory
-	> url: jdbc:mysql://localhost/liquibase\_workshop
-	
-	> username: liquibaseuser
-	
-	> password: password
-	
-	> change.log.file: changelog.xml
-
 1. Be sure to keep a browser window open to the excellent [Liquibase docs](http://www.liquibase.org/manual/home)
 
 
