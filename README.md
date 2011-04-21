@@ -4,19 +4,14 @@ Course materials for the Liquibase Workshop.
 
 ##Requirements
 
-* MySQL 5.x (server and client)
 * JDK 1.5+
-* [Gradle 0.9+](http://gradle.org/downloads.html)
-* OR
-	* VMware Player on Windows
-	* VMware Fusion on Mac
-	* Provided VM image
-
-**PLEASE NOTE**: if you don't have MySQL installed or are not comfortable administering it, you will probably benefit from installing the provided VMware player and using the VM image. If you do have MySQL installed and can create users and databases, it will probably be easier for you to use your host OS and skip VMware.
+* [Gradle 1.0_M1+](http://gradle.org/downloads.html)
 
 ##Setup
 
-1. Copy Workshop Files
+1. Download workshop files
+    * Use Git:
+        * git clone https://github.com/tlberglund/liquibase-workshop
 	* Create a working directory in the location of your choosing
 	* Copy files from thumb drive
 	

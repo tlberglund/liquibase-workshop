@@ -1,0 +1,176 @@
+<h1>Database Refactoring Workshop</h1>
+
+<p>Course materials for the Liquibase Workshop.</p>
+
+<h2>Requirements</h2>
+
+<ul>
+<li>JDK 1.5+</li>
+<li><a href="http://gradle.org/downloads.html">Gradle 1.0_M1+</a></li>
+</ul>
+
+<h2>Setup</h2>
+
+<ol>
+<li><p>Download workshop files</p>
+
+<ul>
+<li>Use Git:
+<ul>
+<li>git clone https://github.com/tlberglund/liquibase-workshop</li>
+</ul></li>
+<li>Create a working directory in the location of your choosing</li>
+<li>Copy files from thumb drive</li>
+</ul></li>
+<li><p>Verify installation of MySQL</p>
+
+<ul>
+<li>From command line, run "mysql" command</li>
+<li>Must be able to log in as admin (to create users and databases)</li>
+<li>You may optionally use the GUI management tool of your choice</li>
+</ul></li>
+<li><p>Create Test databases</p>
+
+<ol>
+<li>mysql -u root -p
+<ul>
+<li>Enter root password when prompted</li>
+</ul></li>
+<li>CREATE DATABASE liquibase_workshop;</li>
+<li>GRANT ALL PRIVILEGES ON liquibase_workshop.* TO liquibaseuser@localhost IDENTIFIED BY 'password';</li>
+<li>exit</li>
+<li>. create_schema.sql</li>
+</ol></li>
+<li><p>Install Gradle</p>
+
+<ul>
+<li>Use the gradlew script to install via the "Gradle wrapper"
+<ul>
+<li>or</li>
+</ul></li>
+<li>Unzip Gradle ZIP file to a directory of your choosing</li>
+<li>Add a GRADLE_HOME environment variable, pointing to this directory</li>
+<li>Add $GRADLE_HOME/bin to your PATH</li>
+<li>Test by running "gradle --version" from the command line</li>
+</ul></li>
+<li><p>Create a database.properties file in your project directory</p>
+
+<blockquote>
+  <p>url: jdbc:mysql://localhost/liquibase_workshop</p>
+
+<p>username: liquibaseuser</p>
+
+<p>password: password</p>
+
+<p>change.log.file: changelog.xml</p>
+</blockquote></li>
+<li><p>Be sure to keep a browser window open to the excellent <a href="http://www.liquibase.org/manual/home">Liquibase docs</a></p></li>
+</ol>
+
+<h2>Database Refactorings</h2>
+
+<ol>
+<li>Rename Table
+<ul>
+<li>Rename the inv table to invoice</li>
+<li>Rename the lineitem table to line_item</li>
+<li>Rename the lidetail table to line_item_detail</li>
+</ul></li>
+<li>Rename columns in the invoice table
+<ul>
+<li>Rename invid to id</li>
+<li>Rename invnumber to invoice_number</li>
+<li>Rename datetimecreated to date_created</li>
+</ul></li>
+<li>Combine two columns using data transformation
+<ul>
+<li>invoice.udtime and invoice.uddate should be combined into invoice.date_updated</li>
+<li>First, create a new column called last_updated with type of DATETIME</li>
+<li>In the same changeset, populate that new column with an UPDATE query that merges the udtime and uddate values
+<ul>
+<li>HINT: timestamp(udtime, uddate) </li>
+</ul></li>
+<li>Discuss whether you should drop the two source columns in this refactoring.
+<ul>
+<li>What does it imply if you drop them?</li>
+<li>What would you have to do if you kept them around?</li>
+</ul></li>
+</ul></li>
+<li>Create tables
+<ul>
+<li>contact_ball_of_mud is too ambitious of a table (or insufficiently coherent). Let's begin splitting it up.
+<ul>
+<li>The <strong>contact</strong> table should contain name fields, gender, email address, street address, birthday, occupation, and national ID</li>
+<li>The <strong>security_info</strong> table should contain password and mother's maiden name</li>
+<li>The <strong>credit_card</strong> table should contain credit card type, number, expiration and CVV</li>
+<li>Choice of data type for each column is left as an exercise for the student.</li>
+</ul></li>
+<li>Don't run this refactoring yet!</li>
+</ul></li>
+<li>Tagging and rolling back
+<ul>
+<li>Tag the database, then run the table rename refactoring written in the previous step
+<ul>
+<li>gradle tag -Dtag=&lt;tagname&gt;</li>
+</ul></li>
+<li>Now roll back to continue development on the refactoring
+<ul>
+<li>gradle rollback -Dtag=&lt;tagname&gt;</li>
+</ul></li>
+</ul></li>
+<li>Finish refactoring of contact_ball_of_mud
+<ul>
+<li>Write data transformation code to populate the three tables from their source</li>
+<li>Remember that security_info and credit_card should have foreign keys to contact. Be sure to add these constraints with the appropriate refactorings</li>
+</ul></li>
+<li>Add a column
+<ul>
+<li>Add a full_name column to contact</li>
+<li>Write data transformation SQL to populate it with the three existing name fields combined
+<ul>
+<li>HINT: CONCAT_WS()</li>
+</ul></li>
+<li>Don't drop of the source name columns.</li>
+</ul></li>
+<li>Create a trigger
+<ul>
+<li>Create a directory called src/triggers under your project</li>
+<li>Create a file called contact_insert.sql in src/triggers
+<ul>
+<li>Write trigger logic to keep full_name up to date with the fields for first name, middle initial, and last name every time a new record is inserted</li>
+</ul></li>
+<li>Create a file called contact_update.sql in src/triggers
+<ul>
+<li>Same logic as the insert trigger</li>
+</ul></li>
+<li>Write changeSets that use the sqlFile refactoring to install these triggers.
+<ul>
+<li>Remember the runOnChange attribute.</li>
+<li>HINT: be sure the changeSet is idempotent!</li>
+</ul></li>
+</ul></li>
+<li>Introduce lookup table
+<ul>
+<li>The invoice table has a field for payment terms, which should be normalized, not stored as strings values in the table</li>
+<li>Create a table called payment_terms with an auto-incrementing id and a varchar(50) field called terms</li>
+<li>Write a series of insertData refactorings to populate this table with all of the possible values of payment terms you found by inspecting the invoice table</li>
+<li>Add a column to the invoice table called payment_terms_id</li>
+<li>Add data transformation code to set payment_terms_id to refer to the appropriate rows of the payment_terms table</li>
+<li>Test your work by manually executing a join on invoice and payment_terms</li>
+<li>Add a foreign key constraint to payment_terms_id
+<ul>
+<li>The details of this constraint are left as an exercise for the student</li>
+</ul></li>
+<li>Note that this step may best be implemented as more than one changeSet. Use your judgment.</li>
+</ul></li>
+<li>Introduce surrogate key
+<ul>
+<li>Add an auto-incrementing column to line_item called id.</li>
+<li>Add a primary key constraint on id.</li>
+</ul></li>
+<li>Remap foreign keys
+<ul>
+<li>Add an integer column to line_item_detail called line_item_id</li>
+<li>Write an UPDATE query to set its values to line_item.id</li>
+</ul></li>
+</ol>

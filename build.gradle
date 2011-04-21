@@ -129,6 +129,23 @@ task dbDoc << {
   runLiquibase([ 'dbDoc', System.properties['liquibase.doc.dir'] ?: "${buildDir.absolutePath}/database/docs"])
 }
 
+
+task createDownloadArchive(type: Zip) {
+  archiveName = 'liquibase-workshop.zip'
+  from projectDir
+  exclude '.git'
+  exclude '.gradle'
+  exclude 'build'
+  exclude 'db'
+  exclude 'changelog.*'
+}
+
+task renderInstructions(type: Exec, description: 'Converts README.md to HTML; will only work in Markdown.pl is in the path') {
+  standardOutput = new FileOutputStream("${projectDir}/workshop_instructions.html")
+  commandLine = ['Markdown.pl', 'README.md']
+}
+
+
 def liquibaseRollback(dryRun) {
   def argList = []
   def tag = System.properties['liquibase.tag']
