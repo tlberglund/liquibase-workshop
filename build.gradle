@@ -130,19 +130,21 @@ task dbDoc << {
 }
 
 
-task createDownloadArchive(type: Zip) {
+task renderInstructions(type: Exec, description: 'Converts README.md to HTML; will only work in Markdown.pl is in the path') {
+  standardOutput = new FileOutputStream("${projectDir}/workshop_instructions.html")
+  commandLine = ['Markdown.pl', 'README.md']
+}
+
+
+task createDownloadArchive(type: Zip, dependsOn: renderInstructions) {
   archiveName = 'liquibase-workshop.zip'
   from projectDir
+  include '*.html'
   exclude '.git'
   exclude '.gradle'
   exclude 'build'
   exclude 'db'
   exclude 'changelog.*'
-}
-
-task renderInstructions(type: Exec, description: 'Converts README.md to HTML; will only work in Markdown.pl is in the path') {
-  standardOutput = new FileOutputStream("${projectDir}/workshop_instructions.html")
-  commandLine = ['Markdown.pl', 'README.md']
 }
 
 
