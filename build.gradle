@@ -139,12 +139,14 @@ task renderInstructions(type: Exec, description: 'Converts README.md to HTML; wi
 task createDownloadArchive(type: Zip, dependsOn: renderInstructions) {
   archiveName = 'liquibase-workshop.zip'
   from projectDir
-  include '*.html'
   exclude '.git'
-  exclude '.gradle'
   exclude 'build'
   exclude 'db'
   exclude 'changelog.*'
+}
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '1.0'
 }
 
 
