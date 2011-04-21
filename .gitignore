@@ -1,3 +1,5 @@
 .gradle/
 build/
 db/
+changelog.xml
+changelog.groovy
