@@ -33,12 +33,14 @@ dependencies {
 
 
 task startDatabase(type: JavaExec) {
+  group = 'workshop'
   workingDir = projectDir
   main = 'org.h2.tools.Server'
   classpath = sourceSets.main.runtimeClasspath
 }
 
 task buildSchema(type: JavaExec) {
+  group = 'workshop'
   classpath = sourceSets.main.runtimeClasspath
   workingDir = projectDir
   main = 'org.h2.tools.RunScript'
@@ -131,12 +133,14 @@ task dbDoc << {
 
 
 task renderInstructions(type: Exec, description: 'Converts README.md to HTML; will only work in Markdown.pl is in the path') {
+  group = 'workshop'
   standardOutput = new FileOutputStream("${projectDir}/workshop_instructions.html")
   commandLine = ['Markdown.pl', 'README.md']
 }
 
 
 task createDownloadArchive(type: Zip, dependsOn: renderInstructions) {
+  group = 'workshop'
   archiveName = 'liquibase-workshop.zip'
   from projectDir
   exclude '.git'
@@ -219,7 +223,7 @@ def runLiquibase(List argList) {
   javaexec {
     workingDir =  database.workingDir ?: projectDir
     main = 'liquibase.integration.commandline.Main'
-    classpath = sourceSets.main.runtimeClasspath
+    classpath = configurations.runtime
     args = stdArgs + argList
   }
 }

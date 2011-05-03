@@ -7,7 +7,7 @@ Course materials for the Liquibase Workshop.
 * JDK 1.5+
 * [Gradle 1.0_M1+](http://gradle.org/downloads.html)
 
-##Setup
+##Environment Setup
 
 1. Download workshop files
     * Use Git:
@@ -27,8 +27,26 @@ Course materials for the Liquibase Workshop.
 1. Be sure to keep a browser window open to the excellent [Liquibase docs](http://www.liquibase.org/manual/home)
 
 
+##Database Setup
 
-##Database Refactorings 
+1. To initialize your embedded H2 Database schema, run the following:
+
+    gradle buildSchema
+
+1. To start up the H2 Database server and open the management interface in the browser, run the following command. Note that this task runs a Java program in the H2 Database distribution, and that program does not exit automatically. You may have to hit CTRL-C to return to the command line, but the server will remain running. 
+
+    gradle startDatabase
+    
+1. To log into the H2 Database web interface, use this JDBC URL, and leave the defaults everywhere else: jdbc:h2:db/liquibase\_workshop;FILE\_LOCK=NO. Click the connect button to log in.
+
+1. To begin using Liquibase on the embedded database, run the following two commands:
+
+    gradle generateChangeLog
+    
+    gradle changeLogSync
+
+
+##Exercises 
 
 1. Rename Table
 	* Rename the inv table to invoice

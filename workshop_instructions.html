@@ -9,7 +9,7 @@
 <li><a href="http://gradle.org/downloads.html">Gradle 1.0_M1+</a></li>
 </ul>
 
-<h2>Setup</h2>
+<h2>Environment Setup</h2>
 
 <ol>
 <li><p>Download workshop files</p>
@@ -40,7 +40,24 @@
 <li><p>Be sure to keep a browser window open to the excellent <a href="http://www.liquibase.org/manual/home">Liquibase docs</a></p></li>
 </ol>
 
-<h2>Database Refactorings</h2>
+<h2>Database Setup</h2>
+
+<ol>
+<li><p>To initialize your embedded H2 Database schema, run the following:</p>
+
+<p>gradle buildSchema</p></li>
+<li><p>To start up the H2 Database server and open the management interface in the browser, run the following command. Note that this task runs a Java program in the H2 Database distribution, and that program does not exit automatically. You may have to hit CTRL-C to return to the command line, but the server will remain running. </p>
+
+<p>gradle startDatabase</p></li>
+<li><p>To log into the H2 Database web interface, use this JDBC URL, and leave the defaults everywhere else: jdbc:h2:db/liquibase_workshop;FILE_LOCK=NO. Click the connect button to log in.</p></li>
+<li><p>To begin using Liquibase on the embedded database, run the following two commands:</p>
+
+<p>gradle generateChangeLog</p>
+
+<p>gradle changeLogSync</p></li>
+</ol>
+
+<h2>Exercises</h2>
 
 <ol>
 <li>Rename Table
