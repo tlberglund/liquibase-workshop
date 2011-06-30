@@ -31,6 +31,18 @@ dependencies {
   runtime 'com.augusttechgroup:groovy-liquibase:0.1'
 }
 
+task createDatabaseScript {
+  group = 'workshop'
+  def fileName = 'starth2'
+  if(System.properties['os.name'].startsWith('Windows')) { 
+    fileName += '.bat'
+  }
+  def file = new File(projectDir, fileName)
+  file.withPrintWriter {  pw -> 
+    pw.print("java -cp ${sourceSets.main.runtimeClasspath.asPath} org.h2.tools.Server") 
+  }
+  file.setExecutable(true)
+}
 
 task startDatabase(type: JavaExec) {
   group = 'workshop'

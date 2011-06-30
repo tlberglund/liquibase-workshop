@@ -3,3 +3,6 @@ build/
 db/
 changelog.xml
 changelog.groovy
+.gradletasknamecache
+starth2
+
