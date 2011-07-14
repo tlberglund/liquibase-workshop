@@ -59,13 +59,17 @@ task buildSchema(type: JavaExec) {
   args = ['-url', database.url, '-user', database.username, '-script', 'create-schema-generic.sql']
 }
 
-task generateChangeLog << {
-  runLiquibase('generateChangeLog')
+
+[ 'status', 'validate', 'changelogSync', 'changelogSyncSQL', 
+  'listLocks', 'releaseLocks', 'markNextChangesetRan', 
+  'markNextChangesetRanSQL', 'dropAll', 'clearChecksums',
+  'generateChangelog', 'changeLogSync',
+  'futureRollbackSQL', 'updateTestingRollback' ].each {  taskName ->
+  task "${taskName}" << { 
+    runLiquibase(taskName)
+  }
 }
 
-task changeLogSync << {
-  runLiquibase('changeLogSync')
-}
 
 task update << {
   liquibaseUpdate(false)
@@ -83,53 +87,6 @@ task rollbackSQL << {
   liquibaseRollback(true)
 }
 
-task futureRollbackSQL << {
-  runLiquibase('futureRollbackSQL')
-}
-
-task updateTestingRollback << {
-  runLiquibase('updateTestingRollback')
-}
-
-task status << {
-  runLiquibase('status')
-}
-
-task validate << {
-  runLiquibase('validate')
-}
-
-task changelogSync << {
-  runLiquibase('changelogSync')
-}
-
-task changelogSyncSQL << {
-  runLiquibase('changelogSyncSQL')
-}
-
-task listLocks << {
-  runLiquibase('listLocks')
-}
-
-task releaseLocks << {
-  runLiquibase('releaseLocks')
-}
-
-task markNextChangesetRan << {
-  runLiquibase('markNextChangesetRan')
-}
-
-task markNextChangesetRanSQL << {
-  runLiquibase('markNextChangesetRanSQL')
-}
-
-task dropAll << {
-  runLiquibase('dropAll')
-}
-
-task clearChecksums << {
-  runLiquibase('clearChecksums')
-}
 
 task diff << {
   runLiquibase(["--referenceUrl=${System.properties['liquibase.referenceUrl']}", "--referenceUsername=${System.properties['liquibase.referenceUsername']}", "--referencePassword=${System.properties['liquibase.referencePassword']}", 'diff'])
@@ -162,7 +119,7 @@ task createDownloadArchive(type: Zip, dependsOn: renderInstructions) {
 }
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '1.0'
+  gradleVersion = '1.0-milestone-3'
 }
 
 
