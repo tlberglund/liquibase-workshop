@@ -62,9 +62,8 @@ Course materials for the Liquibase Workshop.
 	* Rename datetimecreated to date\_created
 1. Combine two columns using data transformation
 	* invoice.udtime and invoice.uddate should be combined into invoice.date\_updated
-	* First, create a new column called last\_updated with type of DATETIME
-	* In the same changeset, populate that new column with an UPDATE query that merges the udtime and uddate values
-		* HINT: timestamp(udtime, uddate) 
+	* First populate the date\_created new column with an UPDATE query that merges the udtime and uddate values
+		* HINT: udtime + uddate
 	* Discuss whether you should drop the two source columns in this refactoring.
 		* What does it imply if you drop them?
 		* What would you have to do if you kept them around?
