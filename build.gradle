@@ -5,10 +5,10 @@ apply plugin: 'liquibase'
 buildscript {
   repositories {
     //    flatDir(dirs: file('lib'))
-    mavenLocal()
+    mavenCentral()
   }
   dependencies {
-    classpath 'com.augusttechgroup:gradle-liquibase-plugin:0.5-SNAPSHOT'
+    classpath 'com.augusttechgroup:gradle-liquibase-plugin:0.5'
     classpath 'com.h2database:h2:1.3.153'
   }
 }
