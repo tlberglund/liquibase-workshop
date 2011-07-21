@@ -1,35 +1,42 @@
 apply plugin: 'java'
-apply plugin: 'groovy'
+apply plugin: 'liquibase'
 
-database = [:]
 
-def propertiesFilename = System.properties['liquibase.properties'] ?: 'database.properties'
-def parentDirectory = (propertiesFilename[0] == '/') ? '/' : projectDir
-def propertiesFile = new File(parentDirectory, propertiesFilename)
-def properties = new Properties()
-if(propertiesFile.exists()) {
-  properties.load(new FileInputStream(propertiesFile))
+buildscript {
+  repositories {
+    //    flatDir(dirs: file('lib'))
+    mavenLocal()
+  }
+  dependencies {
+    classpath 'com.augusttechgroup:gradle-liquibase-plugin:0.5-SNAPSHOT'
+    classpath 'com.h2database:h2:1.3.153'
+  }
 }
-
-database.url = System.properties['database.url'] ?: properties.url
-database.username = System.properties['database.username'] ?: properties.username
-database.password = System.properties['database.password'] ?: properties.password
-database.changeLogFile = System.properties['change.log.file'] ?: properties['change.log.file']
-database.workingDir = System.properties['working.dir'] ?: properties['working.dir']
-
 
 repositories {
   mavenCentral()
-  flatDir(dirs: file("lib"))
+}
+dependencies {
+  runtime 'com.h2database:h2:1.3.153'
 }
 
-dependencies {
-  groovy 'org.codehaus.groovy:groovy:1.7.5'
-  runtime 'org.liquibase:liquibase-core:2.0.1'
-  runtime 'com.h2database:h2:1.3.153'
-  runtime 'mysql:mysql-connector-java:5.1.9'
-  runtime 'com.augusttechgroup:groovy-liquibase:0.1'
+
+changelogs { 
+  main {
+    file = file('changelog.groovy')
+  }
 }
+
+databases {  
+  sandbox { 
+    url = 'jdbc:h2:db/liquibase_workshop;FILE_LOCK=NO'
+    username = 'sa'
+    password = ''
+  }
+}
+
+workingDatabase = databases.sandbox
+
 
 task createDatabaseScript {
   group = 'workshop'
@@ -44,155 +51,20 @@ task createDatabaseScript {
   file.setExecutable(true)
 }
 
+
 task startDatabase(type: JavaExec) {
   group = 'workshop'
   workingDir = projectDir
   main = 'org.h2.tools.Server'
-  classpath = sourceSets.main.runtimeClasspath
+  classpath = runtimeClasspath
 }
+
 
 task buildSchema(type: JavaExec) {
   group = 'workshop'
-  classpath = sourceSets.main.runtimeClasspath
+  classpath = runtimeClasspath
   workingDir = projectDir
   main = 'org.h2.tools.RunScript'
-  args = ['-url', database.url, '-user', database.username, '-script', 'create-schema-generic.sql']
+  args = ['-url', databases.sandbox.url, '-user', databases.sandbox.username, '-script', 'create-schema-generic.sql']
 }
 
-
-[ 'status', 'validate', 'changelogSync', 'changelogSyncSQL', 
-  'listLocks', 'releaseLocks', 'markNextChangesetRan', 
-  'markNextChangesetRanSQL', 'dropAll', 'clearChecksums',
-  'generateChangelog', 'changeLogSync',
-  'futureRollbackSQL', 'updateTestingRollback' ].each {  taskName ->
-  task "${taskName}" << { 
-    runLiquibase(taskName)
-  }
-}
-
-
-task update << {
-  liquibaseUpdate(false)
-}
-
-task updateSQL << {
-  liquibaseUpdate(true)
-}
-
-task rollback << {
-  liquibaseRollback(false)
-}
-
-task rollbackSQL << {
-  liquibaseRollback(true)
-}
-
-
-task diff << {
-  runLiquibase(["--referenceUrl=${System.properties['liquibase.referenceUrl']}", "--referenceUsername=${System.properties['liquibase.referenceUsername']}", "--referencePassword=${System.properties['liquibase.referencePassword']}", 'diff'])
-}
-
-task tag << {
-  runLiquibase(['tag', "${System.properties('liquibase.tag')}"])
-}
-
-task dbDoc << {
-  runLiquibase([ 'dbDoc', System.properties['liquibase.doc.dir'] ?: "${buildDir.absolutePath}/database/docs"])
-}
-
-
-task renderInstructions(type: Exec, description: 'Converts README.md to HTML; will only work in Markdown.pl is in the path') {
-  group = 'workshop'
-  standardOutput = new FileOutputStream("${projectDir}/workshop_instructions.html")
-  commandLine = ['Markdown.pl', 'README.md']
-}
-
-
-task createDownloadArchive(type: Zip, dependsOn: renderInstructions) {
-  group = 'workshop'
-  archiveName = 'liquibase-workshop.zip'
-  from projectDir
-  exclude '.git'
-  exclude 'build'
-  exclude 'db'
-  exclude 'changelog.*'
-}
-
-task wrapper(type: Wrapper) {
-  gradleVersion = '1.0-milestone-3'
-}
-
-
-def liquibaseRollback(dryRun) {
-  def argList = []
-  def tag = System.properties['liquibase.tag']
-  def count = System.properties['liquibase.count']
-  def date = System.properties['liquibase.date']
-
-  def suffix = ''
-  def param = ''
-  if(count) {
-    suffix = 'rollbackCount'
-    param = count
-  }
-  else if(date) {
-    suffix = 'rollbackToDate'
-    param = date
-  }
-  else {
-    suffix = 'rollback'
-    param = tag
-  }
-  
-  if(dryRun) {
-    suffix = suffix + 'SQL'
-  }
-  
-  argList << suffix
-  argList << param
-  
-  runLiquibase(argList)
-}
-
-
-def liquibaseUpdate(dryRun) {
-  def suffix = ''
-  def count = System.properties['liquibase.count']
-  if(count) {
-    suffix = 'Count'
-  }
-  if(dryRun) {
-    suffix = suffix + 'SQL'
-  }
-
-  def argList = [ "update${suffix}" ]
- 
-  if(count) {
-    argList << count
-  }
-
-  runLiquibase(argList)
-}
-
-
-def runLiquibase(String command) {
-  runLiquibase([command])
-}
-
-def runLiquibase(List argList) {
-  def stdArgs = ["--url=${project.database.url}", "--username=${project.database.username}", "--password=${project.database.password}"]
-  if(project.database.changeLogFile) {
-    stdArgs << "--changeLogFile=${project.database.changeLogFile}"
-  }
-  def contexts = System.properties['liquibase.contexts']
-  if(contexts) {
-    stdArgs << "--contexts=${contexts}"
-  }
-  
-  javaexec {
-    workingDir =  database.workingDir ?: projectDir
-    main = 'liquibase.integration.commandline.Main'
-    classpath = configurations.runtime
-    args = stdArgs + argList
-  }
-}
