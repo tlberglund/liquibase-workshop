@@ -4,7 +4,6 @@ apply plugin: 'liquibase'
 
 buildscript {
   repositories {
-    //    flatDir(dirs: file('lib'))
     mavenCentral()
   }
   dependencies {
