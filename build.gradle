@@ -37,6 +37,11 @@ databases {
 workingDatabase = databases.sandbox
 
 
+task wrapper(type: Wrapper) { 
+  gradleVersion: '1.0-milestone-2'
+}
+
+
 task createDatabaseScript {
   group = 'workshop'
   def fileName = 'starth2'
