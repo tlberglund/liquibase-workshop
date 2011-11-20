@@ -1,24 +1,15 @@
-apply plugin: 'java'
 apply plugin: 'liquibase'
-
+apply from: 'database.gradle'
 
 buildscript {
   repositories {
     mavenCentral()
   }
   dependencies {
-    classpath 'com.augusttechgroup:gradle-liquibase-plugin:0.5'
+    classpath 'com.augusttechgroup:gradle-liquibase-plugin:0.5.1'
     classpath 'com.h2database:h2:1.3.153'
   }
 }
-
-repositories {
-  mavenCentral()
-}
-dependencies {
-  runtime 'com.h2database:h2:1.3.153'
-}
-
 
 changelogs { 
   main {
@@ -36,39 +27,11 @@ databases {
 
 workingDatabase = databases.sandbox
 
-
 task wrapper(type: Wrapper) { 
-  gradleVersion: '1.0-milestone-2'
+  gradleVersion: '1.0-milestone-6'
 }
 
 
-task createDatabaseScript {
-  group = 'workshop'
-  def fileName = 'starth2'
-  if(System.properties['os.name'].startsWith('Windows')) { 
-    fileName += '.bat'
-  }
-  def file = new File(projectDir, fileName)
-  file.withPrintWriter {  pw -> 
-    pw.print("java -cp ${sourceSets.main.runtimeClasspath.asPath} org.h2.tools.Server") 
-  }
-  file.setExecutable(true)
-}
 
 
-task startDatabase(type: JavaExec) {
-  group = 'workshop'
-  workingDir = projectDir
-  main = 'org.h2.tools.Server'
-  classpath = runtimeClasspath
-}
-
-
-task buildSchema(type: JavaExec) {
-  group = 'workshop'
-  classpath = runtimeClasspath
-  workingDir = projectDir
-  main = 'org.h2.tools.RunScript'
-  args = ['-url', databases.sandbox.url, '-user', databases.sandbox.username, '-script', 'create-schema-generic.sql']
-}
 
