@@ -17,27 +17,18 @@
 <ul>
 <li>Use Git:
 <ul>
-<li>git clone <a href="https://github.com/tlberglund/liquibase-workshop">https://github.com/tlberglund/liquibase-workshop</a></li>
+<li>git clone https://github.com/tlberglund/liquibase-workshop</li>
 </ul></li>
 <li>Download the ZIP:
 <ul>
-<li><a href="https://github.com/downloads/tlberglund/liquibase-workshop/liquibase-workshop.zip">https://github.com/downloads/tlberglund/liquibase-workshop/liquibase-workshop.zip</a></li>
+<li><a href="https://github.com/tlberglund/liquibase-workshop/zipball/master">https://github.com/tlberglund/liquibase-workshop/zipball/master</a></li>
 </ul></li>
 <li>Put workshop files in a directory of your choosing.</li>
 </ul></li>
-<li><p>Install Gradle using the wrapper (FIRST OPTION)</p>
+<li><p>Install Gradle using the wrapper</p>
 
 <ul>
 <li>Run the <code>gradlew</code> script to download and install the Gradle executable locally</li>
-</ul></li>
-<li><p>Download and install Gradle (SECOND OPTION)</p>
-
-<ul>
-<li>Download Gradle from <a href="http://gradle.org/downloads.html">the Gradle web site</a></li>
-<li>Unzip Gradle ZIP file to a directory of your choosing</li>
-<li>Add a GRADLE_HOME environment variable, pointing to this directory</li>
-<li>Add $GRADLE_HOME/bin to your PATH</li>
-<li>Test by running <code>gradle --version</code> from the command line</li>
 </ul></li>
 <li><p>Be sure to keep a browser window open to the excellent <a href="http://www.liquibase.org/manual/home">Liquibase docs</a></p></li>
 </ol>
@@ -47,10 +38,10 @@
 <ol>
 <li><p>To initialize your embedded H2 Database schema, run the following:</p>
 
-<p><code>gradle buildSchema</code></p></li>
+<p><code>gradlew buildSchema</code></p></li>
 <li><p>To start up the H2 Database server and open the management interface in the browser, run the following command. Note that this task runs a Java program in the H2 Database distribution, and that program does not exit automatically. You will have to hit CTRL-C to return to the command line. </p>
 
-<p><code>gradle startDatabase</code></p></li>
+<p><code>gradlew startDatabase</code></p></li>
 <li><p>Alternatively, run the <code>gradle createDatabaseScript</code> task, which will produce a script called <code>starth2</code> (on Mac and Linux) or <code>starth2.bat</code> (on Windows). You can then start the database by running this script from the command line, which keeps the database running in the background while you continue to interact with workshop tasks.</p></li>
 <li><p>To log into the H2 Database web interface, visit <code>http://localhost:8082</code>. You will see a connect dialog with default values. Enter <code>jdbc:h2:db/liquibase\_workshop;FILE\_LOCK=NO</code> for the JDBC URL, but leave the defaults everywhere else. Click the connect button to log in.</p></li>
 <li><p>To begin using Liquibase on the embedded database, run the following two commands:</p>
@@ -78,10 +69,9 @@
 <li>Combine two columns using data transformation
 <ul>
 <li>invoice.udtime and invoice.uddate should be combined into invoice.date_updated</li>
-<li>First, create a new column called last_updated with type of DATETIME</li>
-<li>In the same changeset, populate that new column with an UPDATE query that merges the udtime and uddate values
+<li>First populate the date_created new column with an UPDATE query that merges the udtime and uddate values
 <ul>
-<li>HINT: timestamp(udtime, uddate) </li>
+<li>HINT: udtime + uddate</li>
 </ul></li>
 <li>Discuss whether you should drop the two source columns in this refactoring.
 <ul>

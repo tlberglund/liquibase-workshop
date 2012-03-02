@@ -11,20 +11,13 @@ Course materials for the Liquibase Workshop.
 
 1. Download workshop files
     * Use Git:
-        * git clone [https://github.com/tlberglund/liquibase-workshop](https://github.com/tlberglund/liquibase-workshop)
+        * git clone https://github.com/tlberglund/liquibase-workshop
 	* Download the ZIP:
-	    * [https://github.com/downloads/tlberglund/liquibase-workshop/liquibase-workshop.zip](https://github.com/downloads/tlberglund/liquibase-workshop/liquibase-workshop.zip)
+	    * [https://github.com/tlberglund/liquibase-workshop/zipball/master](https://github.com/tlberglund/liquibase-workshop/zipball/master)
 	* Put workshop files in a directory of your choosing.
 	
-1. Install Gradle using the wrapper (FIRST OPTION)
+1. Install Gradle using the wrapper
     * Run the `gradlew` script to download and install the Gradle executable locally
-	
-1. Download and install Gradle (SECOND OPTION)
-    * Download Gradle from [the Gradle web site](http://gradle.org/downloads.html)
-    * Unzip Gradle ZIP file to a directory of your choosing
-    * Add a GRADLE\_HOME environment variable, pointing to this directory
-    * Add $GRADLE\_HOME/bin to your PATH
-    * Test by running `gradle --version` from the command line
         
 1. Be sure to keep a browser window open to the excellent [Liquibase docs](http://www.liquibase.org/manual/home)
 
@@ -33,11 +26,11 @@ Course materials for the Liquibase Workshop.
 
 1. To initialize your embedded H2 Database schema, run the following:
 
-    `gradle buildSchema`
+    `gradlew buildSchema`
 
 1. To start up the H2 Database server and open the management interface in the browser, run the following command. Note that this task runs a Java program in the H2 Database distribution, and that program does not exit automatically. You will have to hit CTRL-C to return to the command line. 
 
-    `gradle startDatabase`
+    `gradlew startDatabase`
    
 1. Alternatively, run the `gradle createDatabaseScript` task, which will produce a script called `starth2` (on Mac and Linux) or `starth2.bat` (on Windows). You can then start the database by running this script from the command line, which keeps the database running in the background while you continue to interact with workshop tasks.
    
